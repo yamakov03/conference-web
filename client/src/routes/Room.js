@@ -28,6 +28,7 @@ const Video = (props) => {
 
     return (
         <StyledVideo playsInline autoPlay ref={ref} />
+
     );
 }
 
@@ -110,19 +111,18 @@ const Room = (props) => {
     }
 
     const leaveCall = () => {
-		socketRef.current.destroy()
+        socketRef.current.destroy()
         window.location.href = "/"
-	}
+    }
 
     return (
         <>
             <div>
                 <h1>Room ID: {roomID}</h1>
+                <button className="absolute top-0 end-0" onClick={leaveCall}>Leave call</button>
                 <StyledVideo muted ref={userVideo} autoPlay playsInline />
             </div>
             <Container>
-                <button className="absolute top-0 end-0" onClick={leaveCall}>Leave call</button>
-                
                 {peers.map((peer, index) => {
                     return (
                         <Video key={index} peer={peer} />
