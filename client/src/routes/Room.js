@@ -122,13 +122,13 @@ const Room = (props) => {
                 <button className="absolute top-0 end-0" onClick={leaveCall}>Leave call</button>
                 <StyledVideo muted ref={userVideo} autoPlay playsInline />
             </div>
-            <Container>
+            <div className="flex flex-row">
                 {peers.map((peer, index) => {
                     return (
                         <Video key={index} peer={peer} />
                     );
                 })}
-            </Container>
+            </div>
         </>
     );
 };
