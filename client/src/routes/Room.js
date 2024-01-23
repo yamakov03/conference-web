@@ -34,7 +34,7 @@ const Video = (props) => {
     }, []);
 
     return (
-        <StyledVideo playsInline autoPlay ref={ref} />
+        <StyledVideo muted playsInline autoPlay ref={ref} />
 
     );
 }
@@ -73,7 +73,7 @@ const Room = (props) => {
         peersRef.current.forEach((peerObj) => {
           navigator.mediaDevices.getUserMedia({
             video: { deviceId: { exact: deviceId } },
-            audio: true
+            audio: false,
           }).then(newStream => {
             userVideo.current.srcObject = newStream;
       
@@ -108,7 +108,7 @@ const Room = (props) => {
         aspectRatio: 1.777777778,
         frameRate: { min: 24, ideal: 30, max: 60},
         facingMode: 'user',
-        deviceId: selectedDeviceId,
+        deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
       };
     
       const style = {
@@ -121,6 +121,7 @@ const Room = (props) => {
         socketRef.current = io.connect("/");
         navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
             userVideo.current.srcObject = stream;
+            // userVideo.current.srcObject = selectedDeviceId.stream;
             socketRef.current.emit("join room", roomID);
             socketRef.current.on("all users", users => {
                 const peers = [];
