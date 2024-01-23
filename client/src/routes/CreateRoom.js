@@ -1,5 +1,6 @@
 import React from "react";
 import { v1 as uuid } from "uuid";
+import Button from '@mui/material/Button';
 
 const CreateRoom = (props) => {
     function create() {
@@ -8,8 +9,15 @@ const CreateRoom = (props) => {
     }
 
     return (
-        <button onClick={create}>Create Room</button>
-    );
+        <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={create}
+        >   
+            Create Room
+        </Button>
+        
+    ); 
 }
 
 export default CreateRoom;
