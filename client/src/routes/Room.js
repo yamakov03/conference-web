@@ -28,9 +28,11 @@ const Video = (props) => {
     const ref = useRef();
 
     useEffect(() => {
-        props.peer.on("stream", stream => {
-            ref.current.srcObject = stream;
-        })
+        if (props.peer instanceof Peer) {
+            props.peer.on("stream", stream => {
+                ref.current.srcObject = stream;
+            })
+        }
     }, []);
 
     return (
@@ -113,15 +115,15 @@ const Room = (props) => {
     
       const style = {
         width: '100%', 
-        maxWidth: '960px',
+        maxWidth: '100px',
         height: 'auto'
       };
 
     useEffect(() => {
         socketRef.current = io.connect("/");
         navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
-            userVideo.current.srcObject = stream;
-            // userVideo.current.srcObject = selectedDeviceId.stream;
+            // userVideo.current.srcObject = stream;
+            userVideo.current.srcObject = selectedDeviceId.stream;
             socketRef.current.emit("join room", roomID);
             socketRef.current.on("all users", users => {
                 const peers = [];
@@ -135,6 +137,12 @@ const Room = (props) => {
                 })
                 setPeers(peers);
             })
+
+            socketRef.current.on('user disconnect', id => {
+                const peers = peersRef.current.filter(p => p.peerID !== id);
+                peersRef.current = peers;
+                setPeers(peers);
+            });
 
             socketRef.current.on("user joined", payload => {
                 const peer = addPeer(payload.signal, payload.callerID, stream);
@@ -173,19 +181,16 @@ const Room = (props) => {
             trickle: false,
             stream,
         })
-
         peer.on("signal", signal => {
             socketRef.current.emit("returning signal", { signal, callerID })
         })
-
         peer.signal(incomingSignal);
-
         return peer;
     }
 
     const leaveCall = () => {
-        socketRef.current.destroy()
-        window.location.href = "/"
+        socketRef.current.emit("disconnect");
+        props.history.push('/');
     }
 
     return (
