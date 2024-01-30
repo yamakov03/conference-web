@@ -43,10 +43,9 @@ io.on('connection', socket => {
             room = room.filter(id => id !== socket.id);
             users[roomID] = room;
         }
-        socket.broadcast.emit('user disconnect', socket.id);
+        socket.broadcast.emit('user disconnected', socket.id)
     });
 });
 
 server.listen(process.env.PORT || 8000, () => console.log('server is running on port 8000'));
-
 
