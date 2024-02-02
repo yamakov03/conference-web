@@ -81,7 +81,7 @@ export const VideoRoom = () => {
         }}
       >
         {users.map((user) => (
-          <VideoPlayer key={user.uid} user={user} />
+          <VideoPlayer key={user.uid} user={user} isLocalUser={user.uid === client.uid}/>
         ))}
       </div>
     </div>
