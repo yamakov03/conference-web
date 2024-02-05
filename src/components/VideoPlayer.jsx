@@ -38,6 +38,10 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
     }
   };
 
+  const leaveCall = () => {
+    window.location.reload();
+  };
+
   return (
     <div>
       Uid: {user.uid}
@@ -58,6 +62,7 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
             </select>
           </label>
           <button onClick={switchCamera}>Switch Camera</button>
+          <button onClick={leaveCall}>Leave Call</button>
         </div>
       )}
     </div>
