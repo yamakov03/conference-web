@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { VideoPlayer } from './VideoPlayer';
 
-const APP_ID = '465ee64672294891b8da0e7c3d1f59b4';
-const TOKEN = '007eJxTYLhZXOzfznJFf33n4noZada14o0K+zs8DjMlN3LnKd86vECBwcTMNDXVzMTM3MjI0sTC0jDJIiXRINU82TjFMM3UMslk66ndqQ2BjAxX49cwMTJAIIjPxZCcn5eWWpSal5zKwAAAd+ogpw=='
-const CHANNEL = 'conference';
+const APP_ID = 'insert-app-id-here';
+const TOKEN = 'insert-token-here';
+const CHANNEL = 'insert-channel-name-here';
 
 const client = AgoraRTC.createClient({
   mode: 'rtc',
@@ -61,12 +61,14 @@ export const VideoRoom = () => {
 
     return () => {
       for (let localTrack of localTracks) {
-        localTrack.stop();
-        localTrack.close();
+        if (localTrack) {
+          localTrack.stop();
+          localTrack.close();
+        }
       }
       client.off('user-published', handleUserJoined);
       client.off('user-left', handleUserLeft);
-      client.unpublish(tracks).then(() => client.leave());
+      client.unpublish(localTracks).then(() => client.leave());
     };
   }, []);
 

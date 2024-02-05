@@ -10,7 +10,9 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
     user.videoTrack.play(ref.current);
     fetchDevices();
     return () => {
-      user.videoTrack.stop();
+      if (user.videoTrack) {
+        user.videoTrack.stop();
+      }
     };
   }, [user.videoTrack]);
 
