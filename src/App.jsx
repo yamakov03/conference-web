@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Button from '@mui/material/Button';
 import './App.css';
 import { VideoRoom } from './components/VideoRoom';
 
@@ -9,9 +10,13 @@ function App() {
       <h1>WDJ Virtual Call</h1>
 
       {!joined && (
-        <button onClick={() => setJoined(true)}>
+        <Button
+          variant="contained" 
+          color="primary"
+          onClick={() => setJoined(true)}
+        >
           Join Room
-        </button>
+        </Button>
       )}
 
       {joined && <VideoRoom />}

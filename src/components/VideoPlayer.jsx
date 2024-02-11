@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export const VideoPlayer = ({ user, isLocalUser }) => {
   const ref = useRef();
@@ -50,19 +53,33 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
         <div>
           <label>
             Choose Camera:
-            <select
+            <Select
               value={selectedDeviceId}
               onChange={(e) => setSelectedDeviceId(e.target.value)}
             >
               {devices.map((device) => (
-                <option key={device.deviceId} value={device.deviceId}>
+                <MenuItem key={device.deviceId} value={device.deviceId}>
                   {device.label || `Camera ${device.deviceId}`}
-                </option>
+                </MenuItem>
               ))}
-            </select>
+            </Select>
           </label>
-          <button onClick={switchCamera}>Switch Camera</button>
-          <button onClick={leaveCall}>Leave Call</button>
+          <Button 
+            style={{ marginTop: '20px', marginRight: '20px' }}
+            variant="contained"
+            color="primary"
+            onClick={switchCamera}
+          >
+            Switch Camera
+          </Button>
+          <Button 
+            style={{ marginTop: '20px', marginRight: '20px' }}
+            variant="contained"
+            color="secondary"
+            onClick={leaveCall}
+          >
+            Leave Call
+          </Button>
         </div>
       )}
     </div>
