@@ -4,14 +4,16 @@ import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export const VideoPlayer = ({ user, isLocalUser }) => {
+export const VideoPlayer = ({ user, isLocalUser  }) => {
   const ref = useRef();
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [devices, setDevices] = useState([]);
 
   useEffect(() => {
-    user.videoTrack.play(ref.current);
-    fetchDevices();
+    if (user.videoTrack) {
+      user.videoTrack.play(ref.current);
+      fetchDevices();
+    }
     return () => {
       if (user.videoTrack) {
         user.videoTrack.stop();

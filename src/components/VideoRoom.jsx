@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { VideoPlayer } from './VideoPlayer';
+import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const APP_ID = 'insert-app-id-here';
 const TOKEN = 'insert-token-here';
-const CHANNEL = 'insert-channel-name-here';
+const CHANNEL = 'insert-channel-here';
 
 const client = AgoraRTC.createClient({
   mode: 'rtc',
@@ -14,6 +17,7 @@ const client = AgoraRTC.createClient({
 export const VideoRoom = () => {
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
+  const [selectedUser, setSelectedUser] = useState('');
 
   const handleUserJoined = async (user, mediaType) => {
     await client.subscribe(user, mediaType);
@@ -32,6 +36,12 @@ export const VideoRoom = () => {
       previousUsers.filter((u) => u.uid !== user.uid)
     );
   };
+
+  const unsubscribeUser = (uid) => {
+    client.on('user-published', handleUserJoined);
+    const user = users.find((user) => user.uid === uid);
+    client.unsubscribe(user, "video");
+  }
 
   useEffect(() => {
     client.on('user-published', handleUserJoined);
@@ -83,9 +93,30 @@ export const VideoRoom = () => {
         }}
       >
         {users.map((user) => (
-          <VideoPlayer key={user.uid} user={user} isLocalUser={user.uid === client.uid}/>
+          <VideoPlayer 
+          key={user.uid} 
+          user={user} 
+          isLocalUser={user.uid === client.uid} 
+          />
         ))}
       </div>
+      <Select
+        value={selectedUser}
+        onChange={(e) => setSelectedUser(e.target.value)}
+      >
+        {users
+          .filter((user) => user.uid !== client.uid)
+          .map((user) => (
+            <MenuItem key={user.uid} value={user.uid}>
+              {user.uid}
+            </MenuItem>
+          ))
+        }
+      </Select>
+
+      <Button onClick={() => unsubscribeUser(selectedUser)}>Unsubscribe</Button>
+      
+      {/* printusers: {users.map((user) => user.uid)} */}
     </div>
   );
 };
