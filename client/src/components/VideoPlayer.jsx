@@ -47,14 +47,25 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
 
   return (
     <div>
-      Uid: {user.uid}
-      <div ref={ref} style={{ width: '200px', height: '200px' }}></div>
+      {!isLocalUser && <div>
+        Uid: {user.uid}
+      </div>
+      }
+      <div ref={ref} style={{
+        width: isLocalUser ? '200px' : '300px',
+        height: isLocalUser ? '200px' : '300px',
+        position: isLocalUser ? 'absolute' : 'static',
+        bottom: isLocalUser ? 76 : 'auto',
+        right: isLocalUser ? 0 : 'auto'
+      }}>
+
+      </div>
       {isLocalUser && (
-        <div>
+        <div className="flex text-white justify-center w-full items-center bg-gray-700 gap-5 align-middle p-5 absolute bottom-0 start-0 left-0 sticky-bottom">
           <label>
-            Choose Camera:
             <Select
               value={selectedDeviceId}
+              className="bg-white h-[35px]"
               onChange={(e) => setSelectedDeviceId(e.target.value)}
             >
               {devices.map((device) => (
@@ -64,22 +75,23 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
               ))}
             </Select>
           </label>
-          <Button 
-            style={{ marginTop: '20px', marginRight: '20px' }}
+          <Button
             variant="contained"
             color="primary"
             onClick={switchCamera}
           >
             Switch Camera
           </Button>
-          <Button 
-            style={{ marginTop: '20px', marginRight: '20px' }}
+          <Button
             variant="contained"
             color="secondary"
             onClick={leaveCall}
           >
             Leave Call
           </Button>
+          <p>
+            Your user ID: {user.uid}
+          </p>
         </div>
       )}
     </div>

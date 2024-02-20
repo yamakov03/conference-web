@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { VideoPlayer } from './VideoPlayer';
 
-const APP_ID = 'insert-app-id-here';
-const TOKEN = 'insert-token-here';
-const CHANNEL = 'insert-channel-name-here';
+const APP_ID = process.env.REACT_APP_AGORA_APP_ID
 
 const client = AgoraRTC.createClient({
   mode: 'rtc',
   codec: 'vp8',
 });
 
-export const VideoRoom = () => {
+export const VideoRoom = ({token, channel}) => {
+  console.log(APP_ID, token, channel)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
 
@@ -38,7 +37,7 @@ export const VideoRoom = () => {
     client.on('user-left', handleUserLeft);
 
     client
-      .join(APP_ID, CHANNEL, TOKEN, null)
+      .join(APP_ID, channel, token, null)
       .then((uid) =>
         Promise.all([
           AgoraRTC.createMicrophoneAndCameraTracks(),
@@ -73,18 +72,24 @@ export const VideoRoom = () => {
   }, []);
 
   return (
-    <div
-      style={{ display: 'flex', justifyContent: 'center' }}
-    >
+    <div className='flex justify-center items-center'>
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 200px)',
+          gridTemplateColumns: 'repeat(4, 300px)',
         }}
       >
         {users.map((user) => (
           <VideoPlayer key={user.uid} user={user} isLocalUser={user.uid === client.uid}/>
         ))}
+      </div>
+      <div className='absolute bottom-[78px] start-0'>
+        <p className='truncate w-[400px] cursor-pointer' onClick={() => {navigator.clipboard.writeText(channel)}}>
+          Call ID: {channel}
+        </p>
+        <p className='truncate w-[400px] cursor-pointer' onClick={() => {navigator.clipboard.writeText(token)}}>
+          Call Token: {token}
+        </p>
       </div>
     </div>
   );
