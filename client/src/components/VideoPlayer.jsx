@@ -38,6 +38,15 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
       } catch (error) {
         console.error('Error switching camera:', error);
       }
+      const response = await fetch(`/api/switch-camera?uid=${user.uid}`, {
+        method: 'POST',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      console.log(data);
     }
   };
 

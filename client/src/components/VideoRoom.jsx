@@ -71,6 +71,32 @@ export const VideoRoom = ({token, channel}) => {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('/api/check-switch-camera', {
+        method: 'GET',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        })
+        .then(response => {
+          console.log('Response:', response);
+          return response.json();
+        })
+        .then(data => {
+          console.log('Camera switch status:', data.switched);
+          // Here you can update the state or perform any other actions based on the camera switch status
+        })
+        .catch(error => console.error('Error checking camera switch status:', error));
+    }, 500); // Adjust the interval as needed, here it's set to check every 5 seconds
+  
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, []);
+  
+  
+
   return (
     <div className='flex justify-center items-center'>
       <div
@@ -80,7 +106,11 @@ export const VideoRoom = ({token, channel}) => {
         }}
       >
         {users.map((user) => (
-          <VideoPlayer key={user.uid} user={user} isLocalUser={user.uid === client.uid}/>
+          <VideoPlayer 
+            key={user.uid} 
+            user={user} 
+            isLocalUser={user.uid === client.uid}
+          />
         ))}
       </div>
       <div className='absolute bottom-[78px] start-0'>
