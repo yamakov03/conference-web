@@ -100,10 +100,8 @@ export const VideoRoom = ({token, channel}) => {
   return (
     <div className='flex justify-center items-center'>
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 300px)',
-        }}
+        className='flex flex-wrap justify-center gap-4'
+        style={{ height: '80vh' }}  
       >
         {users.map((user) => (
           <VideoPlayer 
