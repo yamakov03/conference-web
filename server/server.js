@@ -34,9 +34,11 @@ app.get('/api/token', (req, res) => {
 // Add way to signal to other clients that a user has switched cameras
 
 let camSwitchUid;
+let recipientUid;
 
 app.post('/api/switch-camera', (req, res) => {
   const uid = req.query.uid;
+  const recUid = req.query.recUid;
   if (!uid) {
     return res.status(400).send('UID is required');
   }
@@ -44,14 +46,30 @@ app.post('/api/switch-camera', (req, res) => {
   // This message will be picked up by other clients and used to switch the user's video stream
   // This is a placeholder and will not work in a real application
   camSwitchUid = uid;
-  return res.json({ message: `Switched camera for user ${uid}` });
+  recipientUid = recUid;
+  return res.json({ message: `Switched camera for user ${uid}`, recipient: recUid});
 });
 
 app.get('/api/check-switch-camera', (req, res) => {
   // Check if a user has switched cameras
   // This is a placeholder and will not work in a real application
-  return res.json({ switched: camSwitchUid });
+
+  senderUid = camSwitchUid;
+  receiverUid = recipientUid;
+
+  // camSwitchUid = null;
+  // recipientUid = null;
+
+  return res.json({ switched: senderUid, recipient: receiverUid});
 });
+
+app.get('/api/clear-switch-camera', (req, res) => {
+  // Clear the camera switch status
+  // This is a placeholder and will not work in a real application
+  camSwitchUid = null;
+  recipientUid = null;
+  return res.json({ message: 'Cleared camera switch status'});
+} );
 
 
 app.listen(port, () => console.log(`Token server listening on port ${port}!`));

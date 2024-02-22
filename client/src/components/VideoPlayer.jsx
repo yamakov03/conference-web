@@ -4,10 +4,11 @@ import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export const VideoPlayer = ({ user, isLocalUser }) => {
+export const VideoPlayer = ({ user, isLocalUser, users }) => {
   const ref = useRef();
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [devices, setDevices] = useState([]);
+  const [selectedRecipient, setSelectedRecipient] = useState('All Users');
 
   useEffect(() => {
     user.videoTrack.play(ref.current);
@@ -38,7 +39,7 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
       } catch (error) {
         console.error('Error switching camera:', error);
       }
-      const response = await fetch(`/api/switch-camera?uid=${user.uid}`, {
+      const response = await fetch(`/api/switch-camera?uid=${user.uid}&recUid=${selectedRecipient}`, {
         method: 'POST',
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -101,6 +102,30 @@ export const VideoPlayer = ({ user, isLocalUser }) => {
           <p>
             Your user ID: {user.uid}
           </p>
+          <label>
+            <Select
+              value={selectedRecipient}
+              placeholder='Select recipient'
+              onChange={(e) => setSelectedRecipient(e.target.value)}
+              displayEmpty
+              renderValue={(value) => {
+                if (!value) {
+                  return <em>Select recipient</em>;
+                }
+                return value;
+              }}
+            >
+              <MenuItem value='All Users'>
+                All Users
+              </MenuItem>
+              {users.filter((u) => u.uid !== user.uid).map((u) => (
+                <MenuItem key={u.uid} value={u.uid}>
+                  {u.uid}
+                </MenuItem>
+              ))}
+            </Select>
+          </label>
+
         </div>
       )}
     </div>

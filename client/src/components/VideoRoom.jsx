@@ -32,6 +32,15 @@ export const VideoRoom = ({token, channel}) => {
     );
   };
 
+  const unsubsribeUser = (uid) => {
+    console.log("Unsub from" + uid)
+    client.on('user-published', handleUserJoined);
+    const user = client.remoteUsers.find((user) => user.uid === parseInt(uid));
+    console.log("Unsub users array", users)
+    console.log("Unsub user", user)
+    if (user) client.unsubscribe(user, "video");
+  }
+
   useEffect(() => {
     client.on('user-published', handleUserJoined);
     client.on('user-left', handleUserLeft);
@@ -87,13 +96,49 @@ export const VideoRoom = ({token, channel}) => {
         .then(data => {
           console.log('Camera switch status:', data.switched);
           // Here you can update the state or perform any other actions based on the camera switch status
+          unsubsribeUser(data.switched);
+          // if (camSwitchUid === null && recipientUid === null && (data.switched !== null) && (data.recipient !== null)) {
+          //   setCamSwitchUid(data.switched);
+          //   setRecipientUid(data.recipient);
+          //   console.log('unsub sender', camSwitchUid)
+          //   console.log('unsub receiver', recipientUid)
+          //   unsubsribeUser(camSwitchUid)
+          // }
+          // if (camSwitchUid && recipientUid && (recipientUid !== client.uid) && (recipientUid !== 'All Users') && (camSwitchUid !== client.uid)) {
+          //   console.log('Unsubscribing from user:', camSwitchUid);
+          //   unsubsribeUser(camSwitchUid);
+          // }
+
+          if (data.switched && data.recipient && (parseInt(data.switched) !== client.uid)) {
+            console.log('Unsubscribing from user:', parseInt(data.switched));
+            unsubsribeUser(parseInt(data.switched));
+          }
         })
         .catch(error => console.error('Error checking camera switch status:', error));
-    }, 500); // Adjust the interval as needed, here it's set to check every 5 seconds
+    }, 5000); // Adjust the interval as needed, here it's set to check every 5 seconds
   
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
+
+  // useEffect(() => {
+  //   fetch('/api/clear-switch-camera', {
+  //     method: 'GET',
+  //     headers: {
+  //       'Access-Control-Allow-Origin': '*',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //   .then(response => {
+  //     console.log('Response:', response);
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     console.log('Camera switch status cleared:', data.message);
+  //   })
+  //   .catch(error => console.error('Error clearing camera switch status:', error));
+  // }
+  // , []);
   
   
 
@@ -108,6 +153,7 @@ export const VideoRoom = ({token, channel}) => {
             key={user.uid} 
             user={user} 
             isLocalUser={user.uid === client.uid}
+            users={users}
           />
         ))}
       </div>
