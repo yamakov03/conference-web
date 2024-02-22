@@ -35,10 +35,19 @@ export const VideoRoom = ({token, channel}) => {
   const unsubsribeUser = (uid) => {
     console.log("Unsub from" + uid)
     client.on('user-published', handleUserJoined);
-    const user = client.remoteUsers.find((user) => user.uid === parseInt(uid));
+    const user = client.remoteUsers.find((user) => user.uid === uid);
     console.log("Unsub users array", users)
     console.log("Unsub user", user)
     if (user) client.unsubscribe(user, "video");
+  }
+
+  const massUnsubscribeUsers = (uid) => {
+    client.on('user-published', handleUserJoined);
+    const unsubUsers = client.remoteUsers.filter((user) => user.uid !== uid);
+    const unsubUserList = unsubUsers.map((user) => user.uid);
+    console.log("Unsub multiple users array filtered", unsubUsers)
+    console.log("Unsub multiple users array", unsubUserList)
+    client.massUnsubscribe(unsubUsers);
   }
 
   useEffect(() => {
@@ -96,7 +105,7 @@ export const VideoRoom = ({token, channel}) => {
         .then(data => {
           console.log('Camera switch status:', data.switched);
           // Here you can update the state or perform any other actions based on the camera switch status
-          unsubsribeUser(data.switched);
+          // unsubsribeUser(data.switched);
           // if (camSwitchUid === null && recipientUid === null && (data.switched !== null) && (data.recipient !== null)) {
           //   setCamSwitchUid(data.switched);
           //   setRecipientUid(data.recipient);
@@ -117,9 +126,13 @@ export const VideoRoom = ({token, channel}) => {
 
           if (data.switched && data.recipient){
             if ((senderUid !== client.uid) && (receiverUid !== client.uid) && (receiverUid !== 'All Users')) {
-              console.log('Unsubscribing from user:',senderUid);
+              console.log('Unsubscribing from user:', senderUid);
               unsubsribeUser(senderUid);
               }
+            if ((senderUid !== client.uid) && (receiverUid === client.uid)) {
+              console.log('Unsubscribing from multiple users:', senderUid);
+              massUnsubscribeUsers(senderUid);
+            }
           }
         })
         .catch(error => console.error('Error checking camera switch status:', error));
