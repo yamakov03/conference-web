@@ -109,9 +109,17 @@ export const VideoRoom = ({token, channel}) => {
           //   unsubsribeUser(camSwitchUid);
           // }
 
-          if (data.switched && data.recipient && (parseInt(data.switched) !== client.uid)) {
-            console.log('Unsubscribing from user:', parseInt(data.switched));
-            unsubsribeUser(parseInt(data.switched));
+          let senderUid = parseInt(data.switched);
+          let receiverUid = parseInt(data.recipient);
+
+          console.log('Unsub Sender:', senderUid);
+          console.log('Unsub Receiver:', receiverUid);
+
+          if (data.switched && data.recipient){
+            if ((senderUid !== client.uid) && (receiverUid !== client.uid) && (receiverUid !== 'All Users')) {
+              console.log('Unsubscribing from user:',senderUid);
+              unsubsribeUser(senderUid);
+              }
           }
         })
         .catch(error => console.error('Error checking camera switch status:', error));

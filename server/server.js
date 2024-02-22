@@ -42,23 +42,15 @@ app.post('/api/switch-camera', (req, res) => {
   if (!uid) {
     return res.status(400).send('UID is required');
   }
-  // Send a message to the channel to signal that the user has switched cameras
-  // This message will be picked up by other clients and used to switch the user's video stream
-  // This is a placeholder and will not work in a real application
   camSwitchUid = uid;
   recipientUid = recUid;
   return res.json({ message: `Switched camera for user ${uid}`, recipient: recUid});
 });
 
 app.get('/api/check-switch-camera', (req, res) => {
-  // Check if a user has switched cameras
-  // This is a placeholder and will not work in a real application
 
   senderUid = camSwitchUid;
   receiverUid = recipientUid;
-
-  // camSwitchUid = null;
-  // recipientUid = null;
 
   return res.json({ switched: senderUid, recipient: receiverUid});
 });
