@@ -44,10 +44,71 @@ export const VideoRoom = ({token, channel}) => {
   const massUnsubscribeUsers = (uid) => {
     client.on('user-published', handleUserJoined);
     const unsubUsers = client.remoteUsers.filter((user) => user.uid !== uid);
-    const unsubUserList = unsubUsers.map((user) => user.uid);
+    const unsubUsersList = unsubUsers.map((user) => ({user: user, mediaType: "video"}));
     console.log("Unsub multiple users array filtered", unsubUsers)
-    console.log("Unsub multiple users array", unsubUserList)
-    client.massUnsubscribe(unsubUsers);
+    console.log("Unsub multiple users array", unsubUsersList)
+    client.massUnsubscribe(unsubUsersList);
+  }
+
+  const subscribeUser = (uid) => {
+    // client.on('user-published', handleUserJoined);
+    const user = client.remoteUsers.find((user) => user.uid === uid);
+    if (user) client.subscribe(user, "video");
+  }
+
+  const massSubscribeUsers = async(uid) => {
+    // client.on('user-published', handleUserJoined);
+    const subUsers = client.remoteUsers.filter((user) => user.uid !== uid);
+    
+    // if (subUsers[0]) {
+    //   await client.subscribe(subUsers[0], "video");
+    //   subUsers[0].videoTrack.play();}
+    // const subUsersList = subUsers.map((user) => ({user: user, mediaType: "video"}));
+    // console.log("Sub multiple users array filtered", subUsers)
+    // const videoContainer = document.querySelector('.agora_video_player');
+
+    // if (videoContainer) {
+    //     // .video-container element exists
+    //     console.log('.video-container element exists');
+    // } else {
+    //     // .video-container element does not exist
+    //     console.log('.video-container element does not exist');
+    // }
+
+    // const result = await client.massSubscribe(subUsersList);
+    // for (const {track, mediaType, error} of result) {
+    //   if (error) {
+    //     console.error('Failed to subscribe to user', error);
+    //     continue;
+    //   }
+    //   if (mediaType === 'video') {
+    //     console.log('paused:', track.paused);
+    //     track.play(videoContainer);
+    //     // if (videoContainer.paused){
+    //     //     track.play(videoContainer);
+    //     // }
+    //   }
+    // }
+    // client.massSubscribe(subUsersList)
+    //   .then(result => {
+    //     for (const {track, mediaType, error} of result) {
+    //       if (error) {
+    //         console.error('Failed to subscribe to user', error);
+    //         continue;
+    //       }
+    //       if (mediaType === 'video') {
+    //         console.log('paused:', track.paused);
+    //         track.play(videoContainer);
+    //         // if (videoContainer.paused){
+    //         //     track.play(videoContainer);
+    //         // }
+            
+    //       }
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error('Error while subscribing to users:', error);
+    //   });
   }
 
   useEffect(() => {
@@ -119,7 +180,10 @@ export const VideoRoom = ({token, channel}) => {
           // }
 
           let senderUid = parseInt(data.switched);
-          let receiverUid = parseInt(data.recipient);
+          let receiverUid = data.recipient;
+          if (data.recipient !== "All Users") {
+            receiverUid = parseInt(data.recipient);
+          }
 
           console.log('Unsub Sender:', senderUid);
           console.log('Unsub Receiver:', receiverUid);
@@ -127,12 +191,17 @@ export const VideoRoom = ({token, channel}) => {
           if (data.switched && data.recipient){
             if ((senderUid !== client.uid) && (receiverUid !== client.uid) && (receiverUid !== 'All Users')) {
               console.log('Unsubscribing from user:', senderUid);
+              // massSubscribeUsers(senderUid);
               unsubsribeUser(senderUid);
               }
             if ((senderUid !== client.uid) && (receiverUid === client.uid)) {
               console.log('Unsubscribing from multiple users:', senderUid);
+              // subscribeUser(senderUid);
               massUnsubscribeUsers(senderUid);
             }
+            // if (receiverUid === "All Users"){
+            //   massSubscribeUsers("");
+            // }
           }
         })
         .catch(error => console.error('Error checking camera switch status:', error));
