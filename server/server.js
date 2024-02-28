@@ -31,7 +31,8 @@ app.get('/api/token', (req, res) => {
   return res.json({ token });
 });
 
-// Add way to signal to other clients that a user has switched cameras
+
+//Signal to other clients that a user has switched cameras
 
 let camSwitchUid;
 let recipientUid;
@@ -48,20 +49,11 @@ app.post('/api/switch-camera', (req, res) => {
 });
 
 app.get('/api/check-switch-camera', (req, res) => {
-
   senderUid = camSwitchUid;
   receiverUid = recipientUid;
 
   return res.json({ switched: senderUid, recipient: receiverUid});
 });
-
-app.get('/api/clear-switch-camera', (req, res) => {
-  // Clear the camera switch status
-  // This is a placeholder and will not work in a real application
-  camSwitchUid = null;
-  recipientUid = null;
-  return res.json({ message: 'Cleared camera switch status'});
-} );
 
 
 app.listen(port, () => console.log(`Token server listening on port ${port}!`));

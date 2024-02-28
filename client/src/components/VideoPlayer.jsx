@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export const VideoPlayer = ({ user, isLocalUser, users }) => {
+export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
   const ref = useRef();
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [devices, setDevices] = useState([]);
@@ -62,8 +62,8 @@ export const VideoPlayer = ({ user, isLocalUser, users }) => {
       </div>
       }
       <div ref={ref} style={{
-        width: isLocalUser ? '200px' : '300px',
-        height: isLocalUser ? '200px' : '300px',
+        width: isLocalUser ? '200px' : isReceiver ? '400px' : '300px',
+        height: isLocalUser ? '200px' : isReceiver ? '400px' : '300px',
         position: isLocalUser ? 'absolute' : 'static',
         bottom: isLocalUser ? 76 : 'auto',
         right: isLocalUser ? 0 : 'auto'

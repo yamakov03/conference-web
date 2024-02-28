@@ -13,6 +13,8 @@ export const VideoRoom = ({token, channel}) => {
   console.log(APP_ID, token, channel)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
+  const [senderUid, setSenderUid] = useState(null);
+  const [recipientUid, setRecipientUid] = useState("All Users");
 
   const handleUserJoined = async (user, mediaType) => {
     await client.subscribe(user, mediaType);
@@ -31,85 +33,6 @@ export const VideoRoom = ({token, channel}) => {
       previousUsers.filter((u) => u.uid !== user.uid)
     );
   };
-
-  const unsubsribeUser = (uid) => {
-    console.log("Unsub from" + uid)
-    client.on('user-published', handleUserJoined);
-    const user = client.remoteUsers.find((user) => user.uid === uid);
-    console.log("Unsub users array", users)
-    console.log("Unsub user", user)
-    if (user) client.unsubscribe(user, "video");
-  }
-
-  const massUnsubscribeUsers = (uid) => {
-    client.on('user-published', handleUserJoined);
-    const unsubUsers = client.remoteUsers.filter((user) => user.uid !== uid);
-    const unsubUsersList = unsubUsers.map((user) => ({user: user, mediaType: "video"}));
-    console.log("Unsub multiple users array filtered", unsubUsers)
-    console.log("Unsub multiple users array", unsubUsersList)
-    client.massUnsubscribe(unsubUsersList);
-  }
-
-  const subscribeUser = (uid) => {
-    // client.on('user-published', handleUserJoined);
-    const user = client.remoteUsers.find((user) => user.uid === uid);
-    if (user) client.subscribe(user, "video");
-  }
-
-  const massSubscribeUsers = async(uid) => {
-    // client.on('user-published', handleUserJoined);
-    const subUsers = client.remoteUsers.filter((user) => user.uid !== uid);
-    
-    // if (subUsers[0]) {
-    //   await client.subscribe(subUsers[0], "video");
-    //   subUsers[0].videoTrack.play();}
-    // const subUsersList = subUsers.map((user) => ({user: user, mediaType: "video"}));
-    // console.log("Sub multiple users array filtered", subUsers)
-    // const videoContainer = document.querySelector('.agora_video_player');
-
-    // if (videoContainer) {
-    //     // .video-container element exists
-    //     console.log('.video-container element exists');
-    // } else {
-    //     // .video-container element does not exist
-    //     console.log('.video-container element does not exist');
-    // }
-
-    // const result = await client.massSubscribe(subUsersList);
-    // for (const {track, mediaType, error} of result) {
-    //   if (error) {
-    //     console.error('Failed to subscribe to user', error);
-    //     continue;
-    //   }
-    //   if (mediaType === 'video') {
-    //     console.log('paused:', track.paused);
-    //     track.play(videoContainer);
-    //     // if (videoContainer.paused){
-    //     //     track.play(videoContainer);
-    //     // }
-    //   }
-    // }
-    // client.massSubscribe(subUsersList)
-    //   .then(result => {
-    //     for (const {track, mediaType, error} of result) {
-    //       if (error) {
-    //         console.error('Failed to subscribe to user', error);
-    //         continue;
-    //       }
-    //       if (mediaType === 'video') {
-    //         console.log('paused:', track.paused);
-    //         track.play(videoContainer);
-    //         // if (videoContainer.paused){
-    //         //     track.play(videoContainer);
-    //         // }
-            
-    //       }
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.error('Error while subscribing to users:', error);
-    //   });
-  }
 
   useEffect(() => {
     client.on('user-published', handleUserJoined);
@@ -165,72 +88,23 @@ export const VideoRoom = ({token, channel}) => {
         })
         .then(data => {
           console.log('Camera switch status:', data.switched);
-          // Here you can update the state or perform any other actions based on the camera switch status
-          // unsubsribeUser(data.switched);
-          // if (camSwitchUid === null && recipientUid === null && (data.switched !== null) && (data.recipient !== null)) {
-          //   setCamSwitchUid(data.switched);
-          //   setRecipientUid(data.recipient);
-          //   console.log('unsub sender', camSwitchUid)
-          //   console.log('unsub receiver', recipientUid)
-          //   unsubsribeUser(camSwitchUid)
-          // }
-          // if (camSwitchUid && recipientUid && (recipientUid !== client.uid) && (recipientUid !== 'All Users') && (camSwitchUid !== client.uid)) {
-          //   console.log('Unsubscribing from user:', camSwitchUid);
-          //   unsubsribeUser(camSwitchUid);
-          // }
 
-          let senderUid = parseInt(data.switched);
-          let receiverUid = data.recipient;
+
+          setSenderUid(parseInt(data.switched));
+          setRecipientUid(data.recipient);
           if (data.recipient !== "All Users") {
-            receiverUid = parseInt(data.recipient);
+            setRecipientUid(parseInt(data.recipient));
           }
 
           console.log('Unsub Sender:', senderUid);
-          console.log('Unsub Receiver:', receiverUid);
+          console.log('Unsub Receiver:', recipientUid);
 
-          if (data.switched && data.recipient){
-            if ((senderUid !== client.uid) && (receiverUid !== client.uid) && (receiverUid !== 'All Users')) {
-              console.log('Unsubscribing from user:', senderUid);
-              // massSubscribeUsers(senderUid);
-              unsubsribeUser(senderUid);
-              }
-            if ((senderUid !== client.uid) && (receiverUid === client.uid)) {
-              console.log('Unsubscribing from multiple users:', senderUid);
-              // subscribeUser(senderUid);
-              massUnsubscribeUsers(senderUid);
-            }
-            // if (receiverUid === "All Users"){
-            //   massSubscribeUsers("");
-            // }
-          }
         })
         .catch(error => console.error('Error checking camera switch status:', error));
-    }, 5000); // Adjust the interval as needed, here it's set to check every 5 seconds
+    }, 1000); // Adjust the interval as needed, here it's set to check every 1 sec
   
-    // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
-
-  // useEffect(() => {
-  //   fetch('/api/clear-switch-camera', {
-  //     method: 'GET',
-  //     headers: {
-  //       'Access-Control-Allow-Origin': '*',
-  //       'Content-Type': 'application/json',
-  //     },
-  //   })
-  //   .then(response => {
-  //     console.log('Response:', response);
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     console.log('Camera switch status cleared:', data.message);
-  //   })
-  //   .catch(error => console.error('Error clearing camera switch status:', error));
-  // }
-  // , []);
-  
-  
 
   return (
     <div className='flex justify-center items-center'>
@@ -243,6 +117,7 @@ export const VideoRoom = ({token, channel}) => {
             key={user.uid} 
             user={user} 
             isLocalUser={user.uid === client.uid}
+            isReceiver={(user.uid === senderUid) && (recipientUid === client.uid)}
             users={users}
           />
         ))}
