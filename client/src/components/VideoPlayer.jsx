@@ -39,7 +39,7 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
       } catch (error) {
         console.error('Error switching camera:', error);
       }
-      const response = await fetch(`/api/switch-camera?uid=${user.uid}&recUid=${selectedRecipient}`, {
+      const response = await fetch(`/api/switch-camera?senderUid=${user.uid}&recipientUid=${selectedRecipient}`, {
         method: 'POST',
         headers: {
           'Access-Control-Allow-Origin': '*',

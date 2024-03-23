@@ -13,8 +13,7 @@ export const VideoRoom = ({token, channel}) => {
   console.log(APP_ID, token, channel)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
-  const [senderUid, setSenderUid] = useState(null);
-  const [recipientUid, setRecipientUid] = useState("All Users");
+  const [usersViewMap, setUsersViewMap] = useState({});
 
   const handleUserJoined = async (user, mediaType) => {
     await client.subscribe(user, mediaType);
@@ -87,17 +86,10 @@ export const VideoRoom = ({token, channel}) => {
           return response.json();
         })
         .then(data => {
-          console.log('Camera switch status:', data.switched);
 
+          setUsersViewMap(data.usersViewMap);
 
-          setSenderUid(parseInt(data.switched));
-          setRecipientUid(data.recipient);
-          if (data.recipient !== "All Users") {
-            setRecipientUid(parseInt(data.recipient));
-          }
-
-          console.log('Unsub Sender:', senderUid);
-          console.log('Unsub Receiver:', recipientUid);
+          console.log('UsersViewMap:', data.usersViewMap);
 
         })
         .catch(error => console.error('Error checking camera switch status:', error));
@@ -117,7 +109,8 @@ export const VideoRoom = ({token, channel}) => {
             key={user.uid} 
             user={user} 
             isLocalUser={user.uid === client.uid}
-            isReceiver={(user.uid === senderUid) && (recipientUid === client.uid)}
+            // isReceiver={(user.uid === senderUid) && (recipientUid === client.uid)}
+            isReceiver={usersViewMap[user.uid] === client.uid}
             users={users}
           />
         ))}

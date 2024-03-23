@@ -32,27 +32,20 @@ app.get('/api/token', (req, res) => {
 });
 
 
-//Signal to other clients that a user has switched cameras
-
-let camSwitchUid;
-let recipientUid;
+let usersViewMap = {};
 
 app.post('/api/switch-camera', (req, res) => {
-  const uid = req.query.uid;
-  const recUid = req.query.recUid;
-  if (!uid) {
+  const senderUid = req.query.senderUid;
+  const recipientUid = req.query.recipientUid;
+  if (!senderUid) {
     return res.status(400).send('UID is required');
   }
-  camSwitchUid = uid;
-  recipientUid = recUid;
-  return res.json({ message: `Switched camera for user ${uid}`, recipient: recUid});
+  usersViewMap[parseInt(senderUid)] = parseInt(recipientUid);
+  return res.json({ message: `Switched camera for user ${senderUid}`, recipient: recipientUid});
 });
 
 app.get('/api/check-switch-camera', (req, res) => {
-  senderUid = camSwitchUid;
-  receiverUid = recipientUid;
-
-  return res.json({ switched: senderUid, recipient: receiverUid});
+  return res.json({usersViewMap: usersViewMap});
 });
 
 
