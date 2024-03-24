@@ -86,8 +86,10 @@ export const VideoRoom = ({token, channel}) => {
           return response.json();
         })
         .then(data => {
-
-          setUsersViewMap(data.usersViewMap);
+          if (data.usersViewMap.length === 0) {
+            return;
+          }
+          setUsersViewMap(data.usersViewMap[0]);
 
           console.log('UsersViewMap:', data.usersViewMap);
 
@@ -109,8 +111,7 @@ export const VideoRoom = ({token, channel}) => {
             key={user.uid} 
             user={user} 
             isLocalUser={user.uid === client.uid}
-            // isReceiver={(user.uid === senderUid) && (recipientUid === client.uid)}
-            isReceiver={usersViewMap[user.uid] === client.uid}
+            isReceiver={usersViewMap[parseInt(user.uid)] === parseInt(client.uid)}
             users={users}
           />
         ))}

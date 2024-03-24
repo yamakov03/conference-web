@@ -1,6 +1,6 @@
 const express = require('express');
 const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
-
+const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const app = express();
 app.use(cors());
@@ -32,20 +32,55 @@ app.get('/api/token', (req, res) => {
 });
 
 
-let usersViewMap = {};
+const mongoURI = process.env.MONGO_URI;
 
-app.post('/api/switch-camera', (req, res) => {
+const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+client.connect().then(() => { console.log('Connected to MongoDB') }
+  ).catch((err) => console.error(err));
+
+const callUsersDB = client.db('callUsersDB');
+const callUsersCollection = callUsersDB.collection('callUsersCollection');
+
+app.post('/api/switch-camera', async (req, res) => {
   const senderUid = req.query.senderUid;
   const recipientUid = req.query.recipientUid;
   if (!senderUid) {
     return res.status(400).send('UID is required');
   }
-  usersViewMap[parseInt(senderUid)] = parseInt(recipientUid);
-  return res.json({ message: `Switched camera for user ${senderUid}`, recipient: recipientUid});
+
+  try {
+    await callUsersCollection.updateOne({}, { $set: { [senderUid]: parseInt(recipientUid) } }, { upsert: true });
+    return res.json({ message: `Switched camera for user ${senderUid}`, recipient: recipientUid});
+  }
+  catch (error) {
+    return res.status(500).send('Error updating database');
+  }
+  
 });
 
-app.get('/api/check-switch-camera', (req, res) => {
-  return res.json({usersViewMap: usersViewMap});
+app.get('/api/check-switch-camera', async (req, res) => {
+  try {
+    const usersViewMap = await callUsersCollection.find({}).toArray();
+    return res.json({ usersViewMap: usersViewMap });
+  } catch (error) {
+    console.error('Error checking switch camera:', error);
+    return res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/api/leave-call', async (req, res) => {
+  let uid = req.query.uid;
+  if (!uid) {
+    return res.status(400).send('UID is required');
+  }
+  try {
+    await callUsersCollection.updateOne({}, { $unset: { [uid]: '' } });
+    return res.json({ message: `User ${uid} has left the call` });
+  } catch (error) {
+    console.error('Error leaving call:', error);
+    return res.status(500).send('Internal Server Error');
+  }
 });
 
 
