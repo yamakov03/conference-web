@@ -52,13 +52,6 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
   };
 
   const leaveCall = () => {
-    fetch(`/api/leave-call?uid=${user.uid}`, {
-      method: 'POST',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-    });
     window.location.reload();
   };
 

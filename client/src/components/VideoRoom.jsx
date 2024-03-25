@@ -31,6 +31,13 @@ export const VideoRoom = ({token, channel}) => {
     setUsers((previousUsers) =>
       previousUsers.filter((u) => u.uid !== user.uid)
     );
+    fetch(`/api/leave-call?uid=${user.uid}`, {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+    });
   };
 
   useEffect(() => {
