@@ -79,33 +79,33 @@ export const VideoRoom = ({token, channel}) => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch('/api/check-switch-camera', {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json',
-        },
-        })
-        .then(response => {
-          console.log('Response:', response);
-          return response.json();
-        })
-        .then(data => {
-          if (data.usersViewMap.length === 0) {
-            return;
-          }
-          setUsersViewMap(data.usersViewMap[0]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetch('/api/check-switch-camera', {
+  //       method: 'GET',
+  //       headers: {
+  //         'Access-Control-Allow-Origin': '*',
+  //         'Content-Type': 'application/json',
+  //       },
+  //       })
+  //       .then(response => {
+  //         console.log('Response:', response);
+  //         return response.json();
+  //       })
+  //       .then(data => {
+  //         if (data.usersViewMap.length === 0) {
+  //           return;
+  //         }
+  //         setUsersViewMap(data.usersViewMap[0]);
 
-          console.log('UsersViewMap:', data.usersViewMap);
+  //         console.log('UsersViewMap:', data.usersViewMap);
 
-        })
-        .catch(error => console.error('Error checking camera switch status:', error));
-    }, 1000); // Adjust the interval as needed, here it's set to check every 1 sec
+  //       })
+  //       .catch(error => console.error('Error checking camera switch status:', error));
+  //   }, 1000); // Adjust the interval as needed, here it's set to check every 1 sec
   
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <div className='flex justify-center items-center'>

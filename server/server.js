@@ -43,6 +43,7 @@ const callUsersDB = client.db('callUsersDB');
 const callUsersCollection = callUsersDB.collection('callUsersCollection');
 
 app.post('/api/switch-camera', async (req, res) => {
+  // add sender (selector) and receive (selected) pair to DB
   const senderUid = req.query.senderUid;
   const recipientUid = req.query.recipientUid;
   if (!senderUid) {
@@ -60,6 +61,7 @@ app.post('/api/switch-camera', async (req, res) => {
 });
 
 app.get('/api/check-switch-camera', async (req, res) => {
+  // return
   try {
     const usersViewMap = await callUsersCollection.find({}).toArray();
     return res.json({ usersViewMap: usersViewMap });

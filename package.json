@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd server && npm start\" \"cd client && npm start\"",
-    "install": "npm install && cd server && npm install && cd ../client && npm install"
+    "start": "concurrently \"cd server/model && python app.py\" \"cd client && npm start\" \"cd server && npm start\"",
+    "install:main": "npm install && cd server && npm install && cd ../client && npm install && cd ../server/model && pip install -r requirements.txt"
   },
   "author": "",
   "license": "ISC",

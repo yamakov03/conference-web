@@ -10,15 +10,33 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
   const [devices, setDevices] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState('All Users');
 
+  const [videoTrack, setVideoTrack] = useState(null);
+  const [modelVideoTrack, setModelVideoTrack] = useState(null);
+
+  const imgRef = useRef();
+  const canvasRef = useRef();
+  const [stream, setStream] = useState(null);
+  const videoRef = useRef();
+
   useEffect(() => {
-    user.videoTrack.play(ref.current);
+    
+    if (videoTrack) {
+      videoTrack.play(ref.current);
+    } else {
+      user.videoTrack.play(ref.current);
+    }
     fetchDevices();
     return () => {
-      if (user.videoTrack) {
+      if (videoTrack) {
+        videoTrack.stop();
+      }
+      else if (user.videoTrack) {
         user.videoTrack.stop();
       }
     };
   }, [user.videoTrack]);
+
+  
 
   const fetchDevices = async () => {
     try {
@@ -31,6 +49,57 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
       console.error('Error fetching devices:', error);
     }
   };
+
+  // useEffect(() => {
+  //   // Existing code...
+
+  //   // Create the original video track
+  //   const originalVideoTrack = AgoraRTC.createCustomVideoTrack({
+  //     mediaStreamTrack: fetch('http://localhost:7000/original_video_feed').then(response => response.body),
+  //   });
+
+  //   // Create the model video track
+  //   const modelVideoTrack = AgoraRTC.createCustomVideoTrack({
+  //     mediaStreamTrack: fetch('http://localhost:7000/model_video_feed').then(response => response.body),
+  //   });
+
+  //   setVideoTrack(originalVideoTrack);
+  //   setModelVideoTrack(modelVideoTrack);
+  // }, []);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const stream = canvas.captureStream();  // 30 FPS
+      // Start a loop to continuously update the canvas with the current image
+      const interval = setInterval(() => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }, 1000 / 30);  // 30 FPS
+
+      // Capture the canvas output as a MediaStream
+      
+      setStream(stream);
+  
+      return () => {
+        clearInterval(interval);
+      };
+  }, []);
+
+  useEffect(() => {
+    videoRef.current.srcObject = stream;
+}, [stream]);
+
+  // useEffect(() => {
+  //   if (stream) {
+  //     const modelVideoTrack = AgoraRTC.createCustomVideoTrack({
+  //       mediaStreamTrack: stream,
+  //     });
+  
+  //     // setVideoTrack(originalVideoTrack);
+  //     setVideoTrack(modelVideoTrack);
+  //   }
+  // }, [stream]);
 
   const switchCamera = async () => {
     if (user.videoTrack && isLocalUser) {
@@ -57,6 +126,7 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
 
   return (
     <div>
+      <video ref={videoRef} controls style={{width: '300px', height:'200px', border: '1px solid black' }}/>
       {!isLocalUser && <div>
         Uid: {user.uid}
       </div>
@@ -68,6 +138,18 @@ export const VideoPlayer = ({ user, isLocalUser, users, isReceiver }) => {
         bottom: isLocalUser ? 76 : 'auto',
         right: isLocalUser ? 0 : 'auto'
       }}>
+        {isLocalUser && <>
+          <div>
+          <img ref={imgRef} src="http://localhost:7000/api/video/model_video_feed" style={{display: "none"}}  alt="Video feed" />
+          <canvas ref={canvasRef} style={{width: '300px', height:'200px', border: '1px solid black' }}  ></canvas>
+        </div>
+        {/* <div>
+          <img ref={imgRef} src="http://localhost:7000/original_video_feed" alt="Video feed" />
+          <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+        </div> */}
+        </>}
+      
+        
 
       </div>
       {isLocalUser && (
