@@ -9,7 +9,7 @@ const client = AgoraRTC.createClient({
   codec: 'vp8',
 });
 
-export const VideoRoom = ({token, channel}) => {
+export const VideoRoom = ({ token, channel }) => {
   console.log(APP_ID, token, channel)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
@@ -87,7 +87,7 @@ export const VideoRoom = ({token, channel}) => {
           'Access-Control-Allow-Origin': '*',
           'Content-Type': 'application/json',
         },
-        })
+      })
         .then(response => {
           console.log('Response:', response);
           return response.json();
@@ -103,20 +103,33 @@ export const VideoRoom = ({token, channel}) => {
         })
         .catch(error => console.error('Error checking camera switch status:', error));
     }, 1000); // Adjust the interval as needed, here it's set to check every 1 sec
-  
+
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className='flex justify-center items-center'>
+      <div className='absolute top-0 end-0'>
+        <p>User views Log</p>
+        <ul>
+          {
+            Object.entries(usersViewMap)
+              .filter(([key, value]) => key !== null && value !== null && key !== '_id')
+              .slice(0, 10)
+              .map(([key, value]) => (
+                <li key={key}>{key} 👁️ {value}</li>
+              ))
+          }
+        </ul>
+      </div>
       <div
         className='flex flex-wrap justify-center gap-4'
-        style={{ height: '80vh' }}  
+        style={{ height: '80vh' }}
       >
         {users.map((user) => (
-          <VideoPlayer 
-            key={user.uid} 
-            user={user} 
+          <VideoPlayer
+            key={user.uid}
+            user={user}
             isLocalUser={user.uid === client.uid}
             localUserUid={client.uid}
             isReceiver={usersViewMap[parseInt(user.uid)] === parseInt(client.uid)}
@@ -124,11 +137,13 @@ export const VideoRoom = ({token, channel}) => {
           />
         ))}
       </div>
+
+      
       <div className='absolute bottom-[78px] start-0'>
-        <p className='truncate w-[400px] cursor-pointer' onClick={() => {navigator.clipboard.writeText(channel)}}>
+        <p className='truncate w-[400px] cursor-pointer' onClick={() => { navigator.clipboard.writeText(channel) }}>
           Call ID: {channel}
         </p>
-        <p className='truncate w-[400px] cursor-pointer' onClick={() => {navigator.clipboard.writeText(token)}}>
+        <p className='truncate w-[400px] cursor-pointer' onClick={() => { navigator.clipboard.writeText(token) }}>
           Call Token: {token}
         </p>
       </div>

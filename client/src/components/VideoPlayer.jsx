@@ -3,7 +3,6 @@ import AgoraRTC from 'agora-rtc-sdk-ng';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver }) => {
   const ref = useRef();
@@ -119,12 +118,12 @@ export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver
         onMouseLeave={() => handleContainerHover(false)}
       >
         <div ref={ref} style={{
-          width: isLocalUser ? '200px' : isReceiver ? '400px' : '300px',
-          height: isLocalUser ? '200px' : isReceiver ? '400px' : '300px',
+          width: isLocalUser ? '200px' : isReceiver ? '300px' : '300px',
+          height: isLocalUser ? '200px' : isReceiver ? '300px' : '300px',
           position: isLocalUser ? 'absolute' : 'static',
           bottom: isLocalUser ? 76 : 'auto',
           right: isLocalUser ? 0 : 'auto',
-          border: isReceiver ? '10px solid red' : 'none',
+          border: isReceiver ? '5px solid red' : 'none',
         }}>
         </div>
       </div>
