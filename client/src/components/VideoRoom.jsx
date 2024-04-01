@@ -118,6 +118,7 @@ export const VideoRoom = ({token, channel}) => {
             key={user.uid} 
             user={user} 
             isLocalUser={user.uid === client.uid}
+            localUserUid={client.uid}
             isReceiver={usersViewMap[parseInt(user.uid)] === parseInt(client.uid)}
             users={users}
           />
