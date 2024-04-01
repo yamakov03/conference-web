@@ -114,7 +114,7 @@ export const VideoRoom = ({ token, channel }) => {
         <ul>
           {
             Object.entries(usersViewMap)
-              .filter(([key, value]) => key !== null && value !== null && key !== '_id')
+              .filter(([key, value]) => key !== null && value !== null && key !== '_id' && users.map((user) => (user.uid)).includes(parseInt(key)))
               .slice(0, 10)
               .map(([key, value]) => (
                 <li key={key}>{key} 👁️ {value}</li>
