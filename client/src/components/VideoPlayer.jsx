@@ -4,13 +4,13 @@ import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
-export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver }) => {
+export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver, index, clickedIndex, setClickedIndex }) => {
   const ref = useRef();
   const containerRef = useRef();
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [devices, setDevices] = useState([]);
   const [selectedRecipient, setSelectedRecipient] = useState('All Users');
-  const [clicked, setClicked] = useState(false);
+  // const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     user.videoTrack.play(ref.current);
@@ -83,25 +83,21 @@ export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver
   };
 
   const handleContainerClick = () => {
-        // Toggle the clicked state for this video
-        setClicked(!clicked);
-        // Remove the green border from all other videos
-        const videos = document.querySelectorAll('.video_player_container');
-        console.log("videos in handle: ", videos);
-        videos.forEach((video) => {
-          console.log("video in handle border: ", video, video.style.border);
-          if (video !== containerRef.current && video.style.border === '5px solid green') {
-            video.style.border = 'none';
-          }
-        });
-        // Toggle the green border for this video
-        containerRef.current.style.border = clicked ? '5px solid green' : 'none';
-        toggleViewerFocus(user.uid);
+    if ((clickedIndex !== index) && (clickedIndex !== null)) return;
+    setClickedIndex(clickedIndex === index ? null : index);
+    containerRef.current.style.border = clickedIndex === index ? '5px solid green' : 'none';
   }
 
   const handleContainerHover = (isHovering) => {
-    containerRef.current.style.border = isHovering ? '5px solid blue' : clicked ? '5px solid green' : 'none';
+    if (isLocalUser || clickedIndex !== null) return;
+    containerRef.current.style.border = isHovering ? '5px solid blue' : containerRef.current.style.border === '5px solid green' ? '5px solid green' : 'none';
+    toggleViewerFocus(user.uid);
   }
+  
+  useEffect(() => {
+    containerRef.current.style.border = clickedIndex === index ? '5px solid green' : 'none';
+  }
+  , [clickedIndex]);
 
   return (
     <div>
@@ -112,8 +108,12 @@ export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver
       <div 
         className="video_player_container"
         ref={containerRef} 
-        style={{ cursor: 'pointer', width: 'fit-content' }} 
-        onClick={handleContainerClick} 
+        style={
+          (!isLocalUser && (clickedIndex === null || clickedIndex === index)) 
+            ? { cursor: 'pointer', width: 'fit-content' } 
+            : { cursor: 'default' }
+        }        
+        onClick={!isLocalUser ? handleContainerClick : null} 
         onMouseEnter={() => handleContainerHover(true)} 
         onMouseLeave={() => handleContainerHover(false)}
       >

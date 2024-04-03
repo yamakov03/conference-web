@@ -76,7 +76,7 @@ app.post('/api/leave-call', async (req, res) => {
   }
   try {
     await callUsersCollection.updateOne({}, { $unset: { [uid]: '' } });
-    await callUsersCollection.updateOne({}, { $unset: { '': [uid] } });
+    // await callUsersCollection.updateOne({}, { $unset: { '': [uid] } });
     return res.json({ message: `User ${uid} has left the call` });
   } catch (error) {
     console.error('Error leaving call:', error);

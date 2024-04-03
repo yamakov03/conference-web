@@ -14,6 +14,7 @@ export const VideoRoom = ({ token, channel }) => {
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
   const [usersViewMap, setUsersViewMap] = useState({});
+  const [clickedIndex, setClickedIndex] = useState(null);
 
   const handleUserJoined = async (user, mediaType) => {
     await client.subscribe(user, mediaType);
@@ -102,7 +103,7 @@ export const VideoRoom = ({ token, channel }) => {
 
         })
         .catch(error => console.error('Error checking camera switch status:', error));
-    }, 1000); // Adjust the interval as needed, here it's set to check every 1 sec
+    }, 500); // Adjust the interval as needed, here it's set to check every 0.5 sec
 
     return () => clearInterval(interval);
   }, []);
@@ -126,7 +127,7 @@ export const VideoRoom = ({ token, channel }) => {
         className='flex flex-wrap justify-center gap-4'
         style={{ height: '80vh' }}
       >
-        {users.map((user) => (
+        {users.map((user, index) => (
           <VideoPlayer
             key={user.uid}
             user={user}
@@ -134,6 +135,9 @@ export const VideoRoom = ({ token, channel }) => {
             localUserUid={client.uid}
             isReceiver={usersViewMap[parseInt(user.uid)] === parseInt(client.uid)}
             users={users}
+            index={index}
+            clickedIndex={clickedIndex}
+            setClickedIndex={setClickedIndex}
           />
         ))}
       </div>
