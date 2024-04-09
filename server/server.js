@@ -50,7 +50,7 @@ app.post('/api/switch-camera', async (req, res) => {
   }
 
   try {
-    await callUsersCollection.updateOne({}, { $set: { [senderUid]: parseInt(recipientUid) } }, { upsert: true });
+    await callUsersCollection.updateOne({}, { $set: { [senderUid]: recipientUid } }, { upsert: true });
     return res.json({ message: `Switched camera for user ${senderUid}`, recipient: recipientUid});
   }
   catch (error) {

@@ -116,7 +116,7 @@ export const VideoRoom = ({ token, channel, userId }) => {
         <ul>
           {
             Object.entries(usersViewMap)
-              .filter(([key, value]) => key !== null && value !== null && key !== '_id' && users.map((user) => (user.uid)).includes(parseInt(key)))
+              .filter(([key, value]) => key !== null && value !== null && key !== '_id' && users.map((user) => (user.uid)).includes(key))
               .slice(0, 10)
               .map(([key, value]) => (
                 <li key={key}>{key} 👁️ {value}</li>
@@ -134,7 +134,7 @@ export const VideoRoom = ({ token, channel, userId }) => {
             user={user}
             isLocalUser={user.uid === client.uid}
             localUserUid={client.uid}
-            isReceiver={usersViewMap[parseInt(user.uid)] === parseInt(client.uid)}
+            isReceiver={usersViewMap[toString(user.uid)] === toString(client.uid)}
             users={users}
             index={index}
             clickedIndex={clickedIndex}

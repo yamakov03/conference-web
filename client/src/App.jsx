@@ -47,7 +47,7 @@ function App() {
               <Input
                 type="text"
                 name="channelId"
-                placeholder="Channel ID (optional)"
+                placeholder="Call ID (optional)"
                 onChange={(e) => setChannel(e.target.value)}
               />
               <Input
@@ -65,13 +65,13 @@ function App() {
               <Input
                 type="text"
                 name="channelId"
-                placeholder="Channel ID"
+                placeholder="Call ID"
                 onChange={(e) => setChannel(e.target.value)}
               />
               <Input
                 type="text"
                 name="token"
-                placeholder="Channel Token"
+                placeholder="Call Token"
                 onChange={(e) => setToken(e.target.value)}
               />
               <Input
