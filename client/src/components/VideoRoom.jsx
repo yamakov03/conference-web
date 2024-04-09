@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AgoraRTC from 'agora-rtc-sdk-ng';
 import { VideoPlayer } from './VideoPlayer';
+import Tooltip from '@mui/material/Tooltip';
 
 const APP_ID = process.env.REACT_APP_AGORA_APP_ID
 
@@ -9,7 +10,7 @@ const client = AgoraRTC.createClient({
   codec: 'vp8',
 });
 
-export const VideoRoom = ({ token, channel }) => {
+export const VideoRoom = ({ token, channel, userId }) => {
   console.log(APP_ID, token, channel)
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
@@ -46,7 +47,7 @@ export const VideoRoom = ({ token, channel }) => {
     client.on('user-left', handleUserLeft);
 
     client
-      .join(APP_ID, channel, token, null)
+      .join(APP_ID, channel, token, userId)
       .then((uid) =>
         Promise.all([
           AgoraRTC.createMicrophoneAndCameraTracks(),
@@ -110,8 +111,8 @@ export const VideoRoom = ({ token, channel }) => {
 
   return (
     <div className='flex justify-center items-center'>
-      <div className='absolute top-0 end-0'>
-        <p>User views Log</p>
+      <div className='absolute top-1 end-1 rounded-md bg-white p-2'>
+        <p className='font-bold'>User Views Log</p>
         <ul>
           {
             Object.entries(usersViewMap)
@@ -142,15 +143,21 @@ export const VideoRoom = ({ token, channel }) => {
         ))}
       </div>
 
-      
-      <div className='absolute bottom-[78px] start-0'>
-        <p className='truncate w-[400px] cursor-pointer' onClick={() => { navigator.clipboard.writeText(channel) }}>
-          Call ID: {channel}
-        </p>
-        <p className='truncate w-[400px] cursor-pointer' onClick={() => { navigator.clipboard.writeText(token) }}>
-          Call Token: {token}
-        </p>
+
+      <div className='absolute start-1 bottom-1 rounded-md bg-white p-2'>
+        <Tooltip title="Copy call ID">
+          <p className='font-bold truncate w-[200px] cursor-pointer hover:bg-slate-200 rounded-md p-1' data-tooltip-target="call" onClick={() => { navigator.clipboard.writeText(channel) }}>
+            Call ID: {channel}
+          </p>
+        </Tooltip>
+        <Tooltip title="Copy call token">
+          <p className='font-bold truncate w-[200px] cursor-pointer hover:bg-slate-200 rounded-md p-1' data-tooltip-target="token" onClick={() => { navigator.clipboard.writeText(token) }}>
+            Call Token: {token}
+          </p>
+        </Tooltip>
+
       </div>
+
     </div>
   );
 };

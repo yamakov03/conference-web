@@ -159,15 +159,14 @@ export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver
           >
             Leave Call
           </Button>
-          <p>
-            Your user ID: {user.uid}
-          </p>
+          
           <label>
             <Select
               value={selectedRecipient}
               placeholder='Select recipient'
               onChange={(e) => setSelectedRecipient(e.target.value)}
               displayEmpty
+              className='bg-white'
               renderValue={(value) => {
                 if (!value) {
                   return <em>Select recipient</em>;
@@ -185,6 +184,12 @@ export const VideoPlayer = ({ user, isLocalUser, localUserUid, users, isReceiver
               ))}
             </Select>
           </label>
+            
+          <div className='absolute end-1 bottom-1 rounded-md text-white font-bold p-2'>
+          <p>
+            Your user ID: {user.uid}
+          </p>
+          </div>
 
         </div>
       )}
