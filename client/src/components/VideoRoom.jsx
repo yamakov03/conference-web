@@ -100,7 +100,7 @@ export const VideoRoom = ({ token, channel, userId }) => {
           }
           setUsersViewMap(data.usersViewMap[0]);
 
-          console.log('UsersViewMap:', data.usersViewMap);
+          console.log('UsersViewMap from DB:', data.usersViewMap);
 
         })
         .catch(error => console.error('Error checking camera switch status:', error));
@@ -134,7 +134,7 @@ export const VideoRoom = ({ token, channel, userId }) => {
             user={user}
             isLocalUser={user.uid === client.uid}
             localUserUid={client.uid}
-            isReceiver={usersViewMap[toString(user.uid)] === toString(client.uid)}
+            isReceiver={usersViewMap[user.uid] === client.uid}
             users={users}
             index={index}
             clickedIndex={clickedIndex}
